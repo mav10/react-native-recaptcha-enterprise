@@ -54,6 +54,7 @@
   },
   "homepage": "https://github.com/mav10/react-native-recaptcha-enterprise#readme",
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {

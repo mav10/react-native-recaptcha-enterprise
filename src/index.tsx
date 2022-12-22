@@ -17,6 +17,12 @@ const RecaptchaEnterprise = NativeModules.RecaptchaEnterprise
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return RecaptchaEnterprise.multiply(a, b);
+export function initializeRecaptcha(siteKey: string): Promise<void> {
+  return RecaptchaEnterprise.initializeRecaptcha(siteKey);
 }
+
+export function executeAction(actionName: ExecuteActions): Promise<string> {
+  return RecaptchaEnterprise.executeAction(actionName);
+}
+
+export type ExecuteActions = 'LOGIN' | string;

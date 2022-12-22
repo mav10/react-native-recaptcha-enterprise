@@ -1,7 +1,7 @@
 {
   "name": "react-native-recaptcha-enterprise",
   "version": "0.1.0",
-  "description": "test",
+  "description": "Google Enterprise reCaptcha library for React-Native. Real native implementation for iOS and Adnoird.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
@@ -39,7 +39,12 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "captcha",
+    "recaptcha",
+    "enterprise",
+    "protection",
+    "public API"
   ],
   "repository": "https://github.com/mav10/react-native-recaptcha-enterprise",
   "author": "maxim vasin <maxim.vasin@mail.ru> (https://github.com/mav10)",

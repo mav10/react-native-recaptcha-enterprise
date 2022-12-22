@@ -1,31 +1,158 @@
 import * as React from 'react';
-
-import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'react-native-recaptcha-enterprise';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  executeAction,
+  initializeRecaptcha,
+} from 'react-native-recaptcha-enterprise';
+import { ConfigItem } from './ConfigurationItem';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [siteKeyValue, setSiteKeyValue] = useState('');
+  const [actionName, setActionName] = useState('login');
+  const [token, setToken] = useState<string>('');
+  const [isInit, setInit] = useState(false);
 
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+  const [error, setError] = useState<any>();
+  const [inProgress, setInProgress] = useState(false);
+
+  const initializeCaptcha = useCallback(async () => {
+    try {
+      await initializeRecaptcha(siteKeyValue);
+      setInit(true);
+    } catch (e: any) {
+      console.log('Error: ', e);
+      setError(e?.message);
+    }
+  }, [siteKeyValue]);
+
+  const onExecute = useCallback(async () => {
+    try {
+      setInProgress(true);
+      const executeResult = await executeAction(actionName);
+      setToken(executeResult);
+      console.log('Token verify: ', executeResult);
+    } catch (e: any) {
+      console.log('Error: ', e);
+      setError(e?.message);
+      setToken('');
+    } finally {
+      setInProgress(false);
+    }
+  }, [actionName]);
+
+  const onSiteKeyChanged = useCallback((value: string) => {
+    setInit(false);
+    setError(
+      '!WARNING! You need to re-load app and change site key to initialize with new SiteKey!'
+    );
+    setToken('');
+    setSiteKeyValue(value);
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        stickyHeaderIndices={[0]}
+        contentContainerStyle={styles.scrollView}
+      >
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusText}>
+            Is initialized: {JSON.stringify(isInit)}
+          </Text>
+          <Text style={styles.statusRequestText}>{`Execution status: ${
+            isInit ? (inProgress ? 'In Progress' : 'Idle') : 'Not executed'
+          }`}</Text>
+          <Text style={styles.errorText}>
+            {error ? `Error: ${error}` : ' '}
+          </Text>
+        </View>
+        <View style={styles.container}>
+          <Text>Put your action name and Site Key</Text>
+          <ConfigItem
+            containerStyles={styles.configItem}
+            label={'Action Name'}
+            value={actionName}
+            onChangeText={setActionName}
+          />
+          <ConfigItem
+            containerStyles={styles.configItem}
+            label={'Site Key'}
+            value={siteKeyValue}
+            onChangeText={onSiteKeyChanged}
+          />
+
+          {inProgress ? (
+            <ActivityIndicator color={'orange'} />
+          ) : (
+            <Text>{`Token:\n ${token}`}</Text>
+          )}
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button title={'Initialize'} onPress={initializeCaptcha} />
+          <Button title={'Execute action'} onPress={onExecute} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flexGrow: 1,
+    backgroundColor: '#fff',
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
+  statusContainer: {
+    flex: 0,
+    borderWidth: 1,
+    borderStyle: 'dotted',
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 8,
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  buttonContainer: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 8,
+  },
+  configItem: {
+    marginVertical: 5,
+  },
+
+  statusText: {
+    fontSize: 20,
+    textAlign: 'left',
+    color: 'orange',
+    marginBottom: 2,
+  },
+
+  statusRequestText: {
+    fontSize: 20,
+    textAlign: 'left',
+    color: 'green',
+    marginBottom: 2,
+  },
+
+  errorText: {
+    fontSize: 20,
+    textAlign: 'left',
+    color: 'red',
+    marginBottom: 2,
   },
 });

@@ -48,7 +48,7 @@ jobs:
         run: |
           yarn install --cwd example --frozen-lockfile
           yarn install --frozen-lockfile
-      - run: yarn prepare
+      - run: yarn prepack
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}

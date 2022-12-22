@@ -1,16 +1,22 @@
 package com.recaptchaenterprise;
 
-import androidx.annotation.NonNull;
+import android.app.Activity;
+import android.app.Application;
+import android.util.Log;
 
-import com.facebook.react.bridge.NativeModule;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.recaptcha.Recaptcha;
+import com.google.android.recaptcha.RecaptchaAction;
 import com.google.android.recaptcha.RecaptchaTasksClient;
 
 import java.util.List;
@@ -19,6 +25,11 @@ import java.util.concurrent.Executor;
 @ReactModule(name = RecaptchaEnterpriseModule.NAME)
 public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
   public static final String NAME = "RecaptchaEnterprise";
+
+  public final Boolean isInitialized = false;
+
+  @Nullable
+  private RecaptchaTasksClient recaptchaTasksClient = null;
 
   public RecaptchaEnterpriseModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -30,41 +41,68 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
     return NAME;
   }
 
-  private void initializeRecaptchaClient() {
+  @ReactMethod
+  public void initializeRecaptcha(String siteKey, Promise promise) {
+    final Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
+      // TODO: throw exception to handle it on JS level.
+      return;
+    }
+    Application application = currentActivity.getApplication();
+
     Recaptcha
-      .getTasksClient(this, "YOUR_SITE_KEY")
+      .getTasksClient(application, siteKey)
       .addOnSuccessListener(
-        (Executor) this,
         new OnSuccessListener<RecaptchaTasksClient>() {
           @Override
           public void onSuccess(RecaptchaTasksClient client) {
-//            MainActivity.this.recaptchaTasksClient = client;
+            Log.d("GRCP", "initialize succeeded with key: " + siteKey);
+            recaptchaTasksClient = client;
+            promise.resolve(null);
           }
         })
+      .addOnCanceledListener(new OnCanceledListener() {
+        @Override
+        public void onCanceled() {
+          Log.d("GRCP", "initialize onCanceled: ");
+        }
+      })
       .addOnFailureListener(
-        (Executor) this,
         new OnFailureListener() {
           @Override
           public void onFailure(@NonNull Exception e) {
+            Log.d("GRCP", "initialize onFailure: ", e);
+            promise.reject(e);
             // Handle communication errors ...
             // See "Handle communication errors" section
           }
         });
   }
 
-  @Override
-  public List<NativeModule> createNativeModules() {
-    return createNativeModules();
-  }
-
-  @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {}
-
-
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
   @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(a * b);
+  public void executeAction(String action, Promise promise) {
+    try {
+      recaptchaTasksClient
+        .executeTask(action.toUpperCase().equals("LOGIN")
+          ? RecaptchaAction.LOGIN
+          : RecaptchaAction.custom(action))
+        .addOnSuccessListener(new OnSuccessListener<String>() {
+          @Override
+          public void onSuccess(String token) {
+            Log.d("GRCP", "execute action \"" + action + "\" succeeded: ");
+            promise.resolve(token);
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            Log.d("GRCP", "execute action \"" + action + "\" onFailure: ", e);
+          }
+        });
+    } catch (NullPointerException exception) {
+      promise.reject(new Exception("Captcha client is null"));
+    } catch (Exception exception) {
+      promise.reject(new Exception("UNKNOWN error"));
+    }
   }
 }

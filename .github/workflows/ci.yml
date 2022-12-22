@@ -4,8 +4,14 @@
 name: Package publish
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
+      - 'releases/**'
+
+# on:
+#   release:
+#     types: [created]
 
 jobs:
   build:

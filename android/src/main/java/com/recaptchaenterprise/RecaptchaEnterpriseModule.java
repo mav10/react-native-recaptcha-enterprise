@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.recaptcha.Recaptcha;
 import com.google.android.recaptcha.RecaptchaAction;
+import com.google.android.recaptcha.RecaptchaErrorCode;
+import com.google.android.recaptcha.RecaptchaException;
 import com.google.android.recaptcha.RecaptchaTasksClient;
 
 import java.util.List;
@@ -61,20 +63,20 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
             promise.resolve(null);
           }
         })
-      .addOnCanceledListener(new OnCanceledListener() {
-        @Override
-        public void onCanceled() {
-          Log.d("GRCP", "initialize onCanceled: ");
-        }
-      })
       .addOnFailureListener(
         new OnFailureListener() {
           @Override
           public void onFailure(@NonNull Exception e) {
             Log.d("GRCP", "initialize onFailure: ", e);
-            promise.reject(e);
-            // Handle communication errors ...
-            // See "Handle communication errors" section
+
+            String errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.name();
+            String errorMessage = e.getMessage();
+
+            if (e instanceof RecaptchaException) {
+              errorCode = ((RecaptchaException) e).getErrorCode().name();
+              errorMessage = ((RecaptchaException) e).getErrorMessage();
+            }
+            promise.reject(errorCode, errorMessage, e.getCause());
           }
         });
   }
@@ -97,12 +99,20 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
           @Override
           public void onFailure(@NonNull Exception e) {
             Log.d("GRCP", "execute action \"" + action + "\" onFailure: ", e);
+            String errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.name();
+            String errorMessage = e.getMessage();
+
+            if (e instanceof RecaptchaException) {
+              errorCode = ((RecaptchaException) e).getErrorCode().name();
+              errorMessage = ((RecaptchaException) e).getErrorMessage();
+            }
+            promise.reject(errorCode, errorMessage, e.getCause());
           }
         });
     } catch (NullPointerException exception) {
-      promise.reject(new Exception("Captcha client is null"));
+      promise.reject("NotInitializedClient", "Captcha client is null", exception);
     } catch (Exception exception) {
-      promise.reject(new Exception("UNKNOWN error"));
+      promise.reject(RecaptchaErrorCode.UNKNOWN_ERROR.name(), "Unexpected error during execute", exception);
     }
   }
 }

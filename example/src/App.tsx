@@ -31,8 +31,7 @@ export default function App() {
       setInit(true);
       setError('');
     } catch (e: any) {
-      console.log('Error: ', e);
-      setError(e?.message);
+      setError(`${e?.message}[code: ${e?.code}]`);
     } finally {
       setInProgress(false);
     }
@@ -46,8 +45,7 @@ export default function App() {
       setError('');
       console.log('Token verify: ', executeResult);
     } catch (e: any) {
-      console.log('Error: ', e);
-      setError(e?.message);
+      setError(`${e?.message}[code: ${e?.code}]`);
       setToken('');
     } finally {
       setInProgress(false);

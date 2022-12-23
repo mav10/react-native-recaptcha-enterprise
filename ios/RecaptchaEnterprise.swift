@@ -59,7 +59,7 @@ class RecaptchaEnterprise: NSObject {
              * Please register new site key with the key type set to "iOS App" via
              * [https://g.co/recaptcha/androidsignup](https://g.co/recaptcha/androidsignup).
              */
-            return "RecaptchaErroInvalidKeyType"
+            return "RecaptchaErrorInvalidKeyType"
         case 4:
             /**
              * Cannot create a reCAPTCHA client because the site key used doesn't support the calling package.

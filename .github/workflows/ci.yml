@@ -3,15 +3,15 @@
 
 name: Package publish
 
-on:
-  push:
-    branches:
-      - main
-      - 'releases/**'
+#on:
+#  push:
+#    branches:
+#      - main
+#      - 'releases/**'
 
-# on:
-#   release:
-#     types: [created]
+ on:
+   release:
+     types: [created]
 
 jobs:
   build:

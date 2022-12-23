@@ -26,11 +26,14 @@ export default function App() {
 
   const initializeCaptcha = useCallback(async () => {
     try {
+      setInProgress(true);
       await initializeRecaptcha(siteKeyValue);
       setInit(true);
+      setError('');
     } catch (e: any) {
-      console.log('Error: ', e);
-      setError(e?.message);
+      setError(`${e?.message}[code: ${e?.code}]`);
+    } finally {
+      setInProgress(false);
     }
   }, [siteKeyValue]);
 
@@ -39,10 +42,10 @@ export default function App() {
       setInProgress(true);
       const executeResult = await executeAction(actionName);
       setToken(executeResult);
+      setError('');
       console.log('Token verify: ', executeResult);
     } catch (e: any) {
-      console.log('Error: ', e);
-      setError(e?.message);
+      setError(`${e?.message}[code: ${e?.code}]`);
       setToken('');
     } finally {
       setInProgress(false);

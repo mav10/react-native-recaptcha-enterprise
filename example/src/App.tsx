@@ -22,7 +22,7 @@ export default function App() {
   const [siteKeyValue, setSiteKeyValue] = useState(
     Platform.select({
       android: '6Lcyo5ojAAAAAIj2liksaNOEFZBdUcDDt8u8FQ6C',
-      ios: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC22',
+      ios: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC',
       default: '',
     })
   );

@@ -13,7 +13,7 @@ class RecaptchaEnterprise: NSObject {
             }
             if let error = error {
               print("RecaptchaClient creation error: \(error).")
-                reject(self.mapRecaptchaErrorCodeToString(error: error), error.errorMessage, error)
+                reject(String(error.errorCode), error.errorMessage, error)
             }
         }
     }
@@ -25,7 +25,7 @@ class RecaptchaEnterprise: NSObject {
             return
         }
 
-        var actualAction = actionName.uppercased() == "LOGIN"
+        let actualAction = actionName.uppercased() == "LOGIN"
             ? RecaptchaAction.init(action: .login)
             : RecaptchaAction.init(customAction: actionName)
 
@@ -33,52 +33,13 @@ class RecaptchaEnterprise: NSObject {
             if let executeResult = executeResult {
                 resolve(executeResult.recaptchaToken)
             } else if let error = error {
-                reject(self.mapRecaptchaErrorCodeToString(error: error), error.errorMessage, error)
+                reject(String(error.errorCode), error.errorMessage, error)
             }
         }
     }
 
-    @objc(canUseRecaptcha:withResolver:withRejecter:)
-    func canUseRecaptcha(resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
+    @objc(canUseRecaptcha:withRejecter:)
+    func canUseRecaptcha(resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) -> Void {
         resolve(true)
-    }
-
-
-
-    /*
-     * IMPORTANT: This list is add-only. Never change any existing value, since this class is
-     * publicly visible and customers rely on these values to do error checking.
-     */
-    func mapRecaptchaErrorCodeToString(error: RecaptchaError) -> String {
-        switch error.errorCode {
-        case 1:
-            /** reCAPTCHA cannot connect to Google servers, please make sure the app has network access. */
-            return "RecaptchaErrorNetworkError"
-        case 2:
-            /** The site key used to call reCAPTCHA is invalid. */
-            return "RecaptchaErrorInvalidSiteKey"
-        case 3:
-            /**
-             * Cannot create a reCAPTCHA client because the key used cannot be used on iOS.
-             *
-             * Please register new site key with the key type set to "iOS App" via
-             * [https://g.co/recaptcha/androidsignup](https://g.co/recaptcha/androidsignup).
-             */
-            return "RecaptchaErrorInvalidKeyType"
-        case 4:
-            /**
-             * Cannot create a reCAPTCHA client because the site key used doesn't support the calling package.
-             */
-            return "RecaptchaErrorInvalidPackageName"
-        case 5:
-            /** reCAPTCHA cannot accept the action used, see custom action guidelines */
-            return "RecaptchaErrorInvalidAction"
-        case 100:
-            /** reCAPTCHA has faced an internal error, please try again in a bit. */
-            return "RecaptchaErrorCodeInternalError"
-        default:
-            /** Unknown error occurred during the workflow. */
-            return "RecaptchaErrorCodeUnknown"
-        }
     }
 }

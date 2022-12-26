@@ -1,5 +1,6 @@
 export enum RecaptchaErrorCodes {
   'NotInitializedClient' = 'NotInitializedClient',
+  'NotAvailable' = 'NotAvailable',
   'RecaptchaErrorCodeUnknown' = 'RecaptchaErrorCodeUnknown',
   'RecaptchaErrorNetworkError' = 'RecaptchaErrorNetworkError',
   'RecaptchaErrorInvalidSiteKey' = 'RecaptchaErrorInvalidSiteKey',
@@ -30,6 +31,10 @@ export enum AndroidRecaptchaErrorCodes {
   'INVALID_ACTION' = 'RecaptchaErrorInvalidAction',
   'INTERNAL_ERROR' = 'RecaptchaErrorCodeInternalError',
 }
+
+export type CanUseResult = {
+  result: boolean;
+} & ({ result: true } | { result: false; reason: string });
 
 export type RecaptchaErrorType = {
   code: RecaptchaErrorCodes;

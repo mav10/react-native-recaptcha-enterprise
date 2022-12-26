@@ -11,10 +11,12 @@ import {
   View,
 } from 'react-native';
 import {
+  canUseRecaptcha,
   executeAction,
   initializeRecaptcha,
 } from 'react-native-recaptcha-enterprise';
 import { ConfigItem } from './ConfigurationItem';
+import type { CanUseResult } from '../../src/types';
 
 export default function App() {
   const [siteKeyValue, setSiteKeyValue] = useState(
@@ -34,9 +36,16 @@ export default function App() {
   const initializeCaptcha = useCallback(async () => {
     try {
       setInProgress(true);
-      await initializeRecaptcha(siteKeyValue);
-      setInit(true);
-      setError('');
+      const canUse: CanUseResult = await canUseRecaptcha();
+
+      if (canUse.result) {
+        await initializeRecaptcha(siteKeyValue);
+        setInit(true);
+        setError('');
+        return;
+      }
+
+      setError(canUse.reason);
     } catch (e: any) {
       setError(`${e?.message}[code: ${e?.code}]`);
     } finally {

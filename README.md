@@ -78,7 +78,7 @@ await initializeRecaptcha('YOUR_SITE_KEY');
 ```
 
 ### Execute
-This method works only on initialized reCaptcha client [see initialziation]() upper.
+This method works only on initialized reCaptcha client [see initialization](#initialize-recaptcha) upper.
 
 There is only one constant action-name - `LOGIN`. Another as `VIEWED_CART`, `SIGNIN` could be added by request.
 You can pass any custom action name here, but it will be prefixed with string constant **custom_**
@@ -158,7 +158,7 @@ Where:
 - message - description of error, to define what happened.
 - rawData - whole error object thrown from native part.
 
-You can handle it with `cath().then()` approach - classical Promise resolving or use modern one - `async/await` in combination with `try/catch` statement.
+You can handle it with `Promise.catch().then()` approach - classical Promise resolving or use modern one - `async/await` in combination with `try/catch` statement.
 
 Short example:
 ```ts

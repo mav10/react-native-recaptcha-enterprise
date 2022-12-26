@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Button,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,7 +17,13 @@ import {
 import { ConfigItem } from './ConfigurationItem';
 
 export default function App() {
-  const [siteKeyValue, setSiteKeyValue] = useState('');
+  const [siteKeyValue, setSiteKeyValue] = useState(
+    Platform.select({
+      ios: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC',
+      android: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC',
+      default: '',
+    })
+  );
   const [actionName, setActionName] = useState('login');
   const [token, setToken] = useState<string>('');
   const [isInit, setInit] = useState(false);

@@ -4,10 +4,10 @@
 name: Package publish
 
 on:
- push:
-   branches:
-     - main
-     - 'releases/**'
+# push:
+#   branches:
+#     - main
+#     - 'releases/**'
  release:
    types: [created]
 

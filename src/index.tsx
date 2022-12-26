@@ -22,6 +22,8 @@ const RecaptchaEnterprise = NativeModules.RecaptchaEnterprise
 
 /**
  * Checks that `Google ReCaptcha` is callable on native layer.
+ * (It is called under the hood in {@link initializeRecaptcha} on native part.)
+ *
  * It is not available in some cases:
  *  1. If module is not linked correctly.
  *   {Possible fix} - Try to re-install package and check it out again.
@@ -51,7 +53,7 @@ export function canUseRecaptcha(): Promise<CanUseResult> {
     .then((value: boolean) => {
       return {
         result: value,
-        reason: value ? RecaptchaErrorCodes.NotAvailable : undefined,
+        reason: value ? undefined : RecaptchaErrorCodes.NotAvailable,
       } as CanUseResult;
     });
 }

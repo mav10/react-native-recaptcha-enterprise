@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Button,
   Platform,
   SafeAreaView,
@@ -16,36 +17,52 @@ import {
   initializeRecaptcha,
 } from 'react-native-recaptcha-enterprise';
 import { ConfigItem } from './ConfigurationItem';
-import type { CanUseResult } from '../../src/types';
 
 export default function App() {
   const [siteKeyValue, setSiteKeyValue] = useState(
     Platform.select({
-      ios: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC',
-      android: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC',
+      android: '6Lcyo5ojAAAAAIj2liksaNOEFZBdUcDDt8u8FQ6C',
+      ios: '6LdQ_5sjAAAAAMlHSiERnl10P-HTtYHoKLDXYlTC22',
       default: '',
     })
   );
   const [actionName, setActionName] = useState('login');
   const [token, setToken] = useState<string>('');
   const [isInit, setInit] = useState(false);
+  const [canUse, setCanUse] = useState<boolean | null>(null);
 
   const [error, setError] = useState<any>();
   const [inProgress, setInProgress] = useState(false);
 
-  const initializeCaptcha = useCallback(async () => {
+  const checkAvailability = useCallback(async () => {
     try {
       setInProgress(true);
-      const canUse: CanUseResult = await canUseRecaptcha();
+      const canUseResult = await canUseRecaptcha();
 
-      if (canUse.result) {
-        await initializeRecaptcha(siteKeyValue);
-        setInit(true);
-        setError('');
+      if (canUseResult.result) {
+        setCanUse(true);
         return;
       }
 
-      setError(canUse.reason);
+      setCanUse(false);
+      Alert.alert(
+        'ReCaptcha Availability',
+        'Google ReCaptcha can not be used. Reason: ' + canUseResult.reason
+      );
+    } catch (e: any) {
+      setError(`${e?.message}[code: ${e?.code}]`);
+    } finally {
+      setInProgress(false);
+    }
+  }, []);
+
+  const initializeCaptcha = useCallback(async () => {
+    try {
+      setInProgress(true);
+      await initializeRecaptcha(siteKeyValue);
+      setInit(true);
+      setError('');
+      setCanUse(true);
     } catch (e: any) {
       setError(`${e?.message}[code: ${e?.code}]`);
     } finally {
@@ -59,7 +76,7 @@ export default function App() {
       const executeResult = await executeAction(actionName);
       setToken(executeResult);
       setError('');
-      console.log('Token verify: ', executeResult);
+      console.info('Token verify: ', executeResult);
     } catch (e: any) {
       setError(`${e?.message}[code: ${e?.code}]`);
       setToken('');
@@ -86,6 +103,9 @@ export default function App() {
         <View style={styles.statusContainer}>
           <Text style={styles.statusText}>
             Is initialized: {JSON.stringify(isInit)}
+          </Text>
+          <Text style={styles.availabilityText}>
+            Availability: {JSON.stringify(canUse)}
           </Text>
           <Text style={styles.statusRequestText}>{`Execution status: ${
             isInit ? (inProgress ? 'In Progress' : 'Idle') : 'Not executed'
@@ -117,6 +137,7 @@ export default function App() {
         </View>
         <View style={styles.buttonContainer}>
           <Button title={'Initialize'} onPress={initializeCaptcha} />
+          <Button title={'Availability check'} onPress={checkAvailability} />
           <Button title={'Execute action'} onPress={onExecute} />
         </View>
       </ScrollView>
@@ -158,6 +179,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'left',
     color: 'orange',
+    marginBottom: 2,
+  },
+  availabilityText: {
+    fontSize: 20,
+    textAlign: 'left',
+    color: 'black',
     marginBottom: 2,
   },
 

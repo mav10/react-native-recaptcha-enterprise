@@ -17,18 +17,18 @@ class RecaptchaEnterprise: NSObject {
             }
         }
     }
-    
+
     @objc(executeAction:withResolver:withRejecter:)
     func executeAction(actionName: String, resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
         guard let recaptchaClient = self.recaptchaClient else {
             reject("NotInitializedClient", "RecaptchaClient is not initialized", nil)
             return
         }
-        
+
         var actualAction = actionName.uppercased() == "LOGIN"
             ? RecaptchaAction.init(action: .login)
             : RecaptchaAction.init(customAction: actionName)
-        
+
         recaptchaClient.execute(actualAction!) { executeResult, error in
             if let executeResult = executeResult {
                 resolve(executeResult.recaptchaToken)
@@ -37,9 +37,14 @@ class RecaptchaEnterprise: NSObject {
             }
         }
     }
-    
-    
-    
+
+    @objc(canUseRecaptcha:withResolver:withRejecter:)
+    func canUseRecaptcha(resolve: @escaping RCTPromiseResolveBlock,reject: @escaping RCTPromiseRejectBlock) -> Void {
+        resolve(true)
+    }
+
+
+
     /*
      * IMPORTANT: This list is add-only. Never change any existing value, since this class is
      * publicly visible and customers rely on these values to do error checking.

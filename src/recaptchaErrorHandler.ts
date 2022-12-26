@@ -1,22 +1,34 @@
-import {
-  AndroidRecaptchaErrorCodes,
-  IOS_RecaptchaErrorCodes,
-  RecaptchaErrorCodes,
-  RecaptchaErrorType,
-} from './types';
-import { Platform } from 'react-native';
+import { RecaptchaErrorCodes, RecaptchaErrorType } from './types';
 
-// TODO: migrate to numeric code type
 function mapPlatformErrorsIntoCommonType(
-  errorType: keyof IOS_RecaptchaErrorCodes | AndroidRecaptchaErrorCodes
+  errorType: string
 ): RecaptchaErrorCodes {
-  return Platform.select({
-    // @ts-ignore
-    ios: IOS_RecaptchaErrorCodes[errorType],
-    // @ts-ignore
-    android: AndroidRecaptchaErrorCodes[errorType],
-    default: RecaptchaErrorCodes.RecaptchaErrorCodeUnknown,
-  });
+  const errorCode = parseInt(errorType, 10);
+  if (errorCode) {
+    if (errorCode <= 5 || errorCode === 100) {
+      return (
+        // @ts-ignore
+        RecaptchaErrorCodes[errorType] ||
+        RecaptchaErrorCodes.RecaptchaErrorCodeUnknown
+      );
+    }
+
+    console.warn(
+      '[Recaptcha Enterprise]: there is unhandled (not provided) error code: ' +
+        `'${errorCode}'.` +
+        ' Please, inform maintainer of this package via GitHub.'
+    );
+  }
+
+  if (errorType) {
+    return (
+      // @ts-ignore
+      RecaptchaErrorCodes[errorType] ||
+      RecaptchaErrorCodes.RecaptchaErrorCodeUnknown
+    );
+  }
+
+  return RecaptchaErrorCodes.RecaptchaErrorCodeUnknown;
 }
 
 /**

@@ -12,6 +12,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,10 +49,13 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
   public void initializeRecaptcha(String siteKey, Promise promise) {
     final Activity currentActivity = getCurrentActivity();
     if (currentActivity == null) {
-      // TODO: throw exception to handle it on JS level.
-      return;
+      promise.reject(String.valueOf(RecaptchaErrorCode.UNKNOWN_ERROR.getErrorCode()), "Activity and Application context not found");
     }
     Application application = currentActivity.getApplication();
+
+    if(!checkPlayServices()) {
+      promise.reject("NotAvailable", "Recaptcha is not available as no Google Play Services.");
+    }
 
     Recaptcha
       .getTasksClient(application, siteKey)
@@ -69,14 +74,14 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
           public void onFailure(@NonNull Exception e) {
             Log.d("GRCP", "initialize onFailure: ", e);
 
-            String errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.name();
+            int errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.getErrorCode();
             String errorMessage = e.getMessage();
 
             if (e instanceof RecaptchaException) {
-              errorCode = ((RecaptchaException) e).getErrorCode().name();
+              errorCode = ((RecaptchaException) e).getErrorCode().getErrorCode();
               errorMessage = ((RecaptchaException) e).getErrorMessage();
             }
-            promise.reject(errorCode, errorMessage, e.getCause());
+            promise.reject(String.valueOf(errorCode), errorMessage, e.getCause());
           }
         });
   }
@@ -99,20 +104,43 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
           @Override
           public void onFailure(@NonNull Exception e) {
             Log.d("GRCP", "execute action \"" + action + "\" onFailure: ", e);
-            String errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.name();
+            int errorCode = RecaptchaErrorCode.UNKNOWN_ERROR.getErrorCode();
             String errorMessage = e.getMessage();
 
             if (e instanceof RecaptchaException) {
-              errorCode = ((RecaptchaException) e).getErrorCode().name();
+              errorCode = ((RecaptchaException) e).getErrorCode().getErrorCode();
               errorMessage = ((RecaptchaException) e).getErrorMessage();
             }
-            promise.reject(errorCode, errorMessage, e.getCause());
+            promise.reject(String.valueOf(errorCode), errorMessage, e.getCause());
           }
         });
     } catch (NullPointerException exception) {
       promise.reject("NotInitializedClient", "Captcha client is null", exception);
     } catch (Exception exception) {
-      promise.reject(RecaptchaErrorCode.UNKNOWN_ERROR.name(), "Unexpected error during execute", exception);
+      promise.reject(String.valueOf(RecaptchaErrorCode.UNKNOWN_ERROR.getErrorCode()), "Unexpected error during execute", exception);
     }
+  }
+
+  @ReactMethod
+  public void canUseRecaptcha(Promise promise) {
+    try {
+      final boolean result = checkPlayServices();
+      promise.resolve(result);
+    } catch (Exception e) {
+      promise.reject("NotAvailable", "Recaptcha is not available as no Google Play Services.");
+    }
+  }
+
+  private boolean checkPlayServices() {
+    GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+    int resultCode = gApi.isGooglePlayServicesAvailable(getReactApplicationContext());
+    if (resultCode != ConnectionResult.SUCCESS) {
+      if (gApi.isUserResolvableError(resultCode)) {
+        return false;
+//        gApi.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+      }
+      return false;
+    }
+    return true;
   }
 }

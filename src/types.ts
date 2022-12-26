@@ -1,35 +1,20 @@
 export enum RecaptchaErrorCodes {
   'NotInitializedClient' = 'NotInitializedClient',
   'NotAvailable' = 'NotAvailable',
-  'RecaptchaErrorCodeUnknown' = 'RecaptchaErrorCodeUnknown',
-  'RecaptchaErrorNetworkError' = 'RecaptchaErrorNetworkError',
-  'RecaptchaErrorInvalidSiteKey' = 'RecaptchaErrorInvalidSiteKey',
-  'RecaptchaErrorInvalidKeyType' = 'RecaptchaErrorInvalidKeyType',
-  'RecaptchaErrorInvalidPackageName' = 'RecaptchaErrorInvalidPackageName',
-  'RecaptchaErrorInvalidAction' = 'RecaptchaErrorInvalidAction',
-  'RecaptchaErrorCodeInternalError' = 'RecaptchaErrorCodeInternalError',
-}
-
-export enum IOS_RecaptchaErrorCodes {
-  'NotInitializedClient' = 'NotInitializedClient',
-  'RecaptchaErrorCodeUnknown' = 'RecaptchaErrorCodeUnknown',
-  'RecaptchaErrorNetworkError' = 'RecaptchaErrorNetworkError',
-  'RecaptchaErrorInvalidSiteKey' = 'RecaptchaErrorInvalidSiteKey',
-  'RecaptchaErrorInvalidKeyType' = 'RecaptchaErrorInvalidKeyType',
-  'RecaptchaErrorInvalidPackageName' = 'RecaptchaErrorInvalidPackageName',
-  'RecaptchaErrorInvalidAction' = 'RecaptchaErrorInvalidAction',
-  'RecaptchaErrorCodeInternalError' = 'RecaptchaErrorCodeInternalError',
-}
-
-export enum AndroidRecaptchaErrorCodes {
-  'NotInitializedClient' = 'NotInitializedClient',
-  'UNKNOWN_ERROR' = 'RecaptchaErrorCodeUnknown',
-  'NETWORK_ERROR' = 'RecaptchaErrorNetworkError',
-  'INVALID_SITEKEY' = 'RecaptchaErrorInvalidSiteKey',
-  'INVALID_KEYTYPE' = 'RecaptchaErrorInvalidKeyType',
-  'INVALID_PACKAGE_NAME' = 'RecaptchaErrorInvalidPackageName',
-  'INVALID_ACTION' = 'RecaptchaErrorInvalidAction',
-  'INTERNAL_ERROR' = 'RecaptchaErrorCodeInternalError',
+  /* Android: UNKNOWN_ERROR, ios: RecaptchaErrorCodeUnknown */
+  'RecaptchaErrorCodeUnknown' = 0,
+  /* Android: NETWORK_ERROR, ios: RecaptchaErrorNetworkError */
+  'RecaptchaErrorNetworkError' = 1,
+  /* Android: INVALID_SITEKEY, ios: RecaptchaErrorInvalidSiteKey */
+  'RecaptchaErrorInvalidSiteKey' = 2,
+  /* Android: INVALID_KEYTYPE, ios: RecaptchaErrorInvalidKeyType */
+  'RecaptchaErrorInvalidKeyType' = 3,
+  /* Android: INVALID_PACKAGE_NAME, ios: RecaptchaErrorInvalidPackageName */
+  'RecaptchaErrorInvalidPackageName' = 4,
+  /* Android: INVALID_ACTION, ios: RecaptchaErrorInvalidAction */
+  'RecaptchaErrorInvalidAction' = 5,
+  /* Android: INTERNAL_ERROR, ios: RecaptchaErrorCodeInternalError */
+  'RecaptchaErrorCodeInternalError' = 100,
 }
 
 export type CanUseResult = {

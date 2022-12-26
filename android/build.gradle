@@ -64,6 +64,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native"
   implementation "com.google.android.recaptcha:recaptcha:18.0.0"
+    implementation 'com.google.android.gms:play-services-base:18.1.0'
 }
 
 if (isNewArchitectureEnabled()) {

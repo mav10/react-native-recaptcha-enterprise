@@ -10,6 +10,10 @@ RCT_EXTERN_METHOD(executeAction:(NSString*)actionName
                  withResolver:(RCTPromiseResolveBlock)resolve
                  withRejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(canUseRecaptcha:
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 withRejecter:(RCTPromiseRejectBlock)reject)
+
 
 - (dispatch_queue_t)methodQueue
 {

@@ -26,8 +26,22 @@ yarn add react-native-recaptcha-enterprise
 ```
 
 #### :iphone:iOS (_Extra steps_)
-- Since ios project is written in Swift, you need to have Swift enabled in your iOS project. If you already have any .swift files, you are good to go. Otherwise create a new empty Swift source file in Xcode, and allow it to create the neccessary bridging header when prompted.
+- Since ios project is written in Swift, you need to have Swift enabled in your iOS project. If you already have any .swift files, you are good to go. Otherwise, create a new empty Swift source file in Xcode, and allow it to create the neccessary bridging header when prompted.
 - pod install
+
+**for react-native 0.71.xx and higher**
+
+Since 0.71 version of RN in pod-configuration is enabled to mix-up static and dynamic frameworks.
+You can configure ***static*** frameworks globally (as current package requires that) via
+
+```use_frameworks! :linkage => :static```
+
+or override this field for specific pod like this
+
+```pod 'react-native-recaptcha-enterprise', :path => "../node_modules/react-native-permissions", :linkage => :static, :modular_headers => true```
+
+_You can see an example in [Example/ios/Podfile](./example/ios/Podfile)_
+
 
 ## Example
 In [example folder](./example/src) there is simple workflow how to:

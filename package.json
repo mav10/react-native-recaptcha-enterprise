@@ -1,6 +1,6 @@
 {
   "name": "react-native-recaptcha-enterprise",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Google Enterprise reCaptcha library for React-Native. Real native implementation for iOS and Adnoird.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

@@ -13,7 +13,7 @@ prepare_react_native_project!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.disabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -42,7 +42,8 @@ target 'RecaptchaEnterpriseExample' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'react-native-recaptcha-enterprise', :path => "../..", :linkage => :static, :modular_headers => true
+    pod 'RecaptchaInterop', :modular_headers => true
+#   pod 'react-native-recaptcha-enterprise', :path => "../..", :linkage => :static, :modular_headers => true
 
   post_install do |installer|
     react_native_post_install(

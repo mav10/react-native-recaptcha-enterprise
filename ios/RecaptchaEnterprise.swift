@@ -29,7 +29,7 @@ class RecaptchaEnterprise: NSObject {
             ? RecaptchaAction.init(action: .login)
             : RecaptchaAction.init(customAction: actionName)
 
-        recaptchaClient.execute(actualAction!) { executeResult, error in
+        recaptchaClient.execute(actualAction) { executeResult, error in
             if let executeResult = executeResult {
                 resolve(executeResult.recaptchaToken)
             } else if let error = error {

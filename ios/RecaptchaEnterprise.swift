@@ -13,7 +13,7 @@ class RecaptchaEnterprise: NSObject {
             }
             if let error = error {
               print("RecaptchaClient creation error: \(error).")
-                reject(String(error.errorCode), error.errorMessage, error)
+                reject(String(error.errorCode), error.errorMessage, error)
             }
         }
     }
@@ -33,7 +33,7 @@ class RecaptchaEnterprise: NSObject {
             if let executeResult = executeResult {
                 resolve(executeResult.recaptchaToken)
             } else if let error = error {
-                reject(String(error.errorCode), error.errorMessage, error)
+                reject(String(error.errorCode), error.errorMessage, error)
             }
         }
     }

@@ -53,8 +53,12 @@ public class RecaptchaEnterpriseModule extends ReactContextBaseJavaModule {
     }
     Application application = currentActivity.getApplication();
 
-    if(!checkPlayServices()) {
-      promise.reject("NotAvailable", "Recaptcha is not available as no Google Play Services.");
+    try {
+      if(!checkPlayServices()) {
+        promise.reject("NotAvailable", "Recaptcha is not available as no Google Play Services.");
+      }
+    } catch (Exception e) {
+       promise.reject("NotAvailable", "Recaptcha is not available as no Google Play Services.");
     }
 
     Recaptcha
